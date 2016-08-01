@@ -1,11 +1,16 @@
+setwd('/home/olivia/split-apply-combine')
+
 #this loads in the data, each test has been saved separately
-df <- rbind(read.csv ("T1_combined.csv"), read.csv ("T2_combined.csv"), read.csv ("T3_combined.csv"), read.csv ("T4_combined.csv"))
+df <- rbind(read.csv ("CatLearn1.csv"), read.csv ("CatLearn1B.csv"),
+            read.csv ("CatLearn2.csv"), read.csv ("CatLearn2B.csv"),
+            read.csv ("CatLearn1_training.csv"), read.csv ("CatLearn1B_training.csv"),
+            read.csv ("CatLearn2_training.csv"), read.csv ("CatLearn2B_training.csv"))
 
 #id is participant id
 #cue is Woman or Man
 #q is category Q
 #r is category R
-df <- data.frame(id = df$ID, cue = df$VIS.CUE_L.STM, q = df$VIS.TQ.ISFXT, r = df$VIS.TR.ISFXT, timestamp = df$Timestamp)
+df <- data.frame(id = df$ID, cue = df$VIS.CUE_L.STM, q = df$VIS.TA.ISFXT, r = df$VIS.TB.ISFXT, timestamp = df$Timestamp)
 
 #get rid of not a values
 df[is.na(df)] <- 0
@@ -26,7 +31,7 @@ df$r[df$r == -1] <- 1
 #* "Look, Look" sound file started
 #* 250 ms from start of trial (not waiting until sound done), cue appear
 #* 250 ms, cue made 500x500 pixels
-#* 250 ms, cue back to 300x300 pixles
+#* 250 ms, cue back to 300x300 pixels
 #* 250 ms, cue made 500x500 px
 #* 250 ms, cue made 300x300 px
 #* 250 ms, target appears  (if train trial, central above;  if test, left/right above)
@@ -75,10 +80,26 @@ print(t.test(Proportion_Correct, Proportion_Incorrect,paired=TRUE, alt="greater"
 
 #and also create boxplots to visualise the data
 boxplot(Proportion_Correct, Proportion_Incorrect,
-        #data=ToothGrowth,
-        #notch=TRUE, 
+        data=ToothGrowth,
+        notch=TRUE, 
         col=(c("darkgreen","lightblue")),
 #        main="Two Categories",
         names=c("Correct", "Incorrect"),
         ylab = 'Proportion Looking at AOIs',
         xlab = 'Fixations')
+library(ggplot2)
+df$correct <- as.factor(df$correct)
+
+p <- ggplot(df, aes(x=df$correct, y=df$prop)) + geom_violin()
+p
+# Rotate the violin plot
+p + coord_flip()
+# Set trim argument to FALSE
+ggplot(df, aes(x=df$correct, y=df$prop)) + 
+  geom_violin(trim=FALSE)
+
+# violin plot with dot plot
+p + geom_dotplot(binaxis='y', stackdir='center', dotsize=1)
+# violin plot with jittered points
+# 0.2 : degree of jitter in x direction
+p + geom_jitter(shape=16, position=position_jitter(0.2))
