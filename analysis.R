@@ -52,7 +52,7 @@ df$b[df$b == -1] <- 1
 #do not wait until end of sound file to start next delay timer
 #* 2500 ms delay, then end trial.
 #so we care only about data from 3500 onwards, hence drop the res
-df <- df[!df$timestamp < 3500, ]
+df <- df[!df$timestamp <= 1500, ]
 #now dump timestamp as it's useless for a t-test
 df$timestamp <- NULL
 
